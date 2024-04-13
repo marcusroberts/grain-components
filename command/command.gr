@@ -1,0 +1,66 @@
+module Command
+
+from "runtime/dataStructures" include DataStructures
+from "runtime/unsafe/wasmi32" include WasmI32
+from "runtime/unsafe/wasmi64" include WasmI64
+from "runtime/unsafe/wasmf32" include WasmF32
+from "runtime/unsafe/wasmf64" include WasmF64
+from "runtime/unsafe/memory" include Memory
+from "int32" include Int32
+from "int64" include Int64
+from "char" include Char
+from "list" include List
+
+@unsafe
+provide let cabi_realloc = (
+  originalPtr: WasmI32,
+  originalSize: WasmI32,
+  alignment: WasmI32,
+  newSize: WasmI32,
+) => {
+  if (WasmI32.eqz(originalPtr)) {
+    Memory.malloc(newSize)
+  } else {
+    let newPtr = Memory.malloc(newSize)
+    let amt = if (WasmI32.(<)(originalSize, newSize)) originalSize else newSize
+    Memory.copy(newPtr, originalPtr, amt)
+    Memory.free(originalPtr)
+    newPtr
+  }
+}
+
+provide record Resource<a> {
+  mut handle: Int32,
+  rep: a,
+}
+
+provide enum Op {
+  Add,
+}
+
+provide module Calculate {
+  @externalName("eval-expression")
+  foreign wasm wit_bindgen_evalExpression:
+    (WasmI32, WasmI32, WasmI32) => WasmI32 from "docs:calculator/calculate@0.1.0"
+
+  @unsafe
+  provide let evalExpression: (Op, Uint32, Uint32) => Uint32 = (op, x, y) => {
+    let mut enum_lower = 0n
+    match (op) {
+      Add: Op => {
+        enum_lower = 0n
+      },
+    }
+    let ret = wit_bindgen_evalExpression(
+      enum_lower,
+      WasmI32.load(WasmI32.fromGrain(x), 4n),
+      WasmI32.load(WasmI32.fromGrain(y), 4n)
+    )
+    WasmI32.toGrain(DataStructures.newUint32(ret)): Uint32
+  }
+}
+
+provide let _start = () => {
+  let result = Calculate.evalExpression(Add, 1ul, 2ul)
+  print("Grain Calculator " ++ toString(result))
+}
