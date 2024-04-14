@@ -12,6 +12,7 @@ I then copied these files into their source locations and added the required fun
 To perform the basic compilation
 
 ```grain compile adder/adder.gr --release  -o adder.wasm```
+
 ```grain compile calculator/calculator.gr --release  -o calculator.wasm```
 
 and for the one I would actually run as a command line program:
@@ -22,7 +23,9 @@ and for the one I would actually run as a command line program:
 We then use wasm-tools to embed the wit into the wasm
 
 ```wasm-tools component embed ./wit --world adder -o embedded-adder.wasm adder.wasm```
+
 ```wasm-tools component embed ./wit --world calculator -o embedded-calculator.wasm calculator.wasm```
+
 ```wasm-tools component embed ./wit --world app -o command.embedded.wasm command.wasm```
 
 
