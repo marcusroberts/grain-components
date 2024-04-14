@@ -31,7 +31,7 @@ We then use wasm-tools to embed the wit into the wasm
 
 And then use wasm-tooms to make the components:
 
-Make the adder component and add the adder component 
+Make the adder component 
 
 ```wasm-tools component new -o component-adder.wasm --adapt ./adapters/wasi_snapshot_preview1.command.wasm embedded-adder.wasm```
 
