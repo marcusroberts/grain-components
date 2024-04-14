@@ -1,5 +1,5 @@
 
-To recreate
+This is my workings to recreate the Bytecode alliance WebAssembly Component Model tutorial (https://component-model.bytecodealliance.org/tutorial.html) but in Grain instead of rust.
 
 Ue the Grain branch of wit-bindgen (https://github.com/grain-lang/wit-bindgen/tree/grain) to generate the skeleton code
 
